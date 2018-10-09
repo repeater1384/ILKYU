@@ -28,8 +28,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 
 	private Random random;
 
-	private int xCoor = 10, yCoor = 10, size = 5; //size << 처음 길이 
-	
+	private int xCoor = 10, yCoor = 10, length = 10, size = 20;
+
 	private int ticks = 0;
 
 	public GamePanel() {
@@ -62,47 +62,46 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		}
 	}
 
-	public void tick() {
+	public void update() {
+		if (right)
+			xCoor++;
+		if (left)
+			xCoor--;
+		if (down)
+			yCoor++;
+		if (up)
+			yCoor--;
+		ticks = 0;
+
+		b = new Bodypart(xCoor, yCoor, size);
+		snake.add(b);
+
+		if (snake.size() > length) {
+			snake.remove(0);
+		}
+
 		if (snake.size() == 0) {
-			b = new Bodypart(xCoor, yCoor, 10);
+			b = new Bodypart(xCoor, yCoor, size);
 			snake.add(b);
 		}
 
 		ticks++;
-		if (ticks > 250000) {
-			if (right)
-				xCoor++;
-			if (left)
-				xCoor--;
-			if (down)
-				yCoor++;
-			if (up)
-				yCoor--;
-			ticks = 0;
-
-			b = new Bodypart(xCoor, yCoor, 10);
-			snake.add(b);
-
-			if (snake.size() > size) {
-				snake.remove(0);
-			}
-		}
 
 		if (apples.size() == 0) {
-			
-			int xCoor = random.nextInt(49);
-			int yCoor = random.nextInt(49);
 
-			apple = new Apple(xCoor, yCoor, 10);
+			int xCoor = random.nextInt(WIDTH / size - 1);
+			int yCoor = random.nextInt(HEIGHT / size - 1);
+
+			apple = new Apple(xCoor, yCoor, size);
 			apples.add(apple);
 		}
 
 		for (int i = 0; i < apples.size(); i++) {
 			if (xCoor == apples.get(i).getxCoor() && yCoor == apples.get(i).getyCoor()) {
 
-				size++;
+				length++;
 				apples.remove(i);
-				
+
 			}
 		}
 
@@ -115,7 +114,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 			}
 		}
 
-		if (xCoor < 0 || xCoor > 49 || yCoor < 0 || yCoor > 49) { // 벽과 충돌
+		if (xCoor < 0 || xCoor > WIDTH / size - 1 || yCoor < 0 || yCoor > HEIGHT / size - 1) { // 벽과 충돌
 			System.out.println("game over");
 			stop();
 		}
@@ -124,29 +123,40 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 
 	public void paint(Graphics gr) {
 		gr.clearRect(0, 0, WIDTH, HEIGHT);
+		render(gr);
+//		gr.setColor(Color.black);
+//		gr.fillRect(0, 0, WIDTH, HEIGHT);
 
-		gr.setColor(Color.black);
-		gr.fillRect(0, 0, WIDTH, HEIGHT);
+	}
 
-//		for (int i = 0; i < WIDTH / 10; i++) {
-//			gr.drawLine(i * 10, 0, i * 10, HEIGHT);
-//		}
-//		for (int i = 0; i < HEIGHT / 10; i++) {
-//			gr.drawLine(0, i * 10, WIDTH, i * 10);
-//		}
+	public void run() {
+		while (ruuning) {
+			try {
+				update();
+				repaint();
+				Thread.sleep(1000 / 10);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void render(Graphics gr) {
+
+		for (int i = 0; i < WIDTH / size; i++) {
+			gr.drawLine(i * size, 0, i * size, HEIGHT);
+		}
+		for (int i = 0; i < HEIGHT / size; i++) {
+			gr.drawLine(0, i * size, WIDTH, i * size);
+		}
 		for (int i = 0; i < snake.size(); i++) {
 			snake.get(i).draw(gr);
 		}
 		for (int i = 0; i < apples.size(); i++) {
 			apples.get(i).draw(gr);
 		}
-	}
 
-	public void run() {
-		while (ruuning) {
-			tick();
-			repaint();
-		}
 	}
 
 	@Override
