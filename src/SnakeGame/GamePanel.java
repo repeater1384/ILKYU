@@ -12,7 +12,6 @@ import javax.swing.JPanel;
 
 public class GamePanel extends JPanel implements Runnable, KeyListener {
 
-	private static final long serialVersionUID = 1L;
 	public static final int WIDTH = 500, HEIGHT = 500;
 
 	private Thread thread;
@@ -30,13 +29,13 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 
 	private int xCoor = 10, yCoor = 10, length = 10, size = 20;
 
-	private int ticks = 0;
 
 	public GamePanel() {
 		setFocusable(true);
 
 		setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		addKeyListener(this);
+//		setBackground(Color.black);
 
 		snake = new ArrayList<Bodypart>();
 		apples = new ArrayList<Apple>();
@@ -71,7 +70,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 			yCoor++;
 		if (up)
 			yCoor--;
-		ticks = 0;
 
 		b = new Bodypart(xCoor, yCoor, size);
 		snake.add(b);
@@ -85,7 +83,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 			snake.add(b);
 		}
 
-		ticks++;
 
 		if (apples.size() == 0) {
 
@@ -124,8 +121,9 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 	public void paint(Graphics gr) {
 		gr.clearRect(0, 0, WIDTH, HEIGHT);
 		render(gr);
-//		gr.setColor(Color.black);
-//		gr.fillRect(0, 0, WIDTH, HEIGHT);
+		
+		gr.setColor(Color.black);
+		gr.fillRect(0, 0, WIDTH, HEIGHT);
 
 	}
 
@@ -134,7 +132,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 			try {
 				update();
 				repaint();
-				Thread.sleep(1000 / 10);
+				Thread.sleep(1000 / 60);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -143,20 +141,25 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 	}
 
 	private void render(Graphics gr) {
-
-		for (int i = 0; i < WIDTH / size; i++) {
-			gr.drawLine(i * size, 0, i * size, HEIGHT);
-		}
-		for (int i = 0; i < HEIGHT / size; i++) {
-			gr.drawLine(0, i * size, WIDTH, i * size);
-		}
+		
+//		for (int i = 0; i < WIDTH / size; i++) {
+//			gr.drawLine(i * size, 0, i * size, HEIGHT);
+//		}
+//		for (int i = 0; i < HEIGHT / size; i++) {
+//			gr.drawLine(0, i * size, WIDTH, i * size);
+//		}//격자 처리
+		
+//		gr.setColor(Color.black);
+//		gr.fillRect(0, 0, WIDTH, HEIGHT);
+		
+		
 		for (int i = 0; i < snake.size(); i++) {
 			snake.get(i).draw(gr);
 		}
 		for (int i = 0; i < apples.size(); i++) {
 			apples.get(i).draw(gr);
 		}
-
+		
 	}
 
 	@Override
